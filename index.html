@@ -19,11 +19,13 @@
         }
 
         body {
-            background: transparent;
+            background: #152B2B;
             font-family: 'Silka', 'Arial', sans-serif;
             overflow: hidden;
             width: 1285px;
             height: 64px;
+            margin: 0;
+            padding: 0;
         }
 
         .ticker-container {
@@ -251,13 +253,14 @@
             // Sort by market cap (roughly by price for this demo)
             coinArray.sort((a, b) => b.price - a.price);
 
-            // Create the ticker content
+            // Create the ticker content and repeat it 3 times for seamless looping
+            let singleLoop = '';
             coinArray.forEach(coin => {
                 const priceFormatted = formatPrice(coin.price);
                 const changeFormatted = formatChange(coin.change);
                 const changeClass = coin.change >= 0 ? 'positive' : 'negative';
 
-                html += `
+                singleLoop += `
                     <div class="crypto-item">
                         <span class="crypto-symbol">${coin.symbol}</span>
                         <span class="crypto-price">${priceFormatted}</span>
@@ -266,8 +269,8 @@
                 `;
             });
 
-            // Duplicate the content for seamless looping
-            tickerContent.innerHTML = html + html;
+            // Triple the content for seamless infinite loop
+            tickerContent.innerHTML = singleLoop + singleLoop + singleLoop;
         }
 
         async function initializeTicker() {
