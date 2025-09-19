@@ -116,20 +116,36 @@
 
         async function fetchCryptoPrices() {
             try {
-                const url = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://api.coingecko.com/api/v3/simple/price?ids=${COINS}&vs_currencies=usd&include_24hr_change=true`)}`;
-                const response = await fetch(url);
-                const result = await response.json();
+                // Try direct CoinGecko API first
+                const directUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${COINS}&vs_currencies=usd&include_24hr_change=true`;
+                let response = await fetch(directUrl);
                 
-                if (result.contents) {
-                    const data = JSON.parse(result.contents);
-                    return data;
+                if (!response.ok) {
+                    // Fallback to CORS proxy if direct fails
+                    const proxyUrl = `https://cors-anywhere.herokuapp.com/${directUrl}`;
+                    response = await fetch(proxyUrl);
+                }
+                
+                if (!response.ok) {
+                    // Second fallback with allorigins
+                    const alloriginsUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(directUrl)}`;
+                    response = await fetch(alloriginsUrl);
+                    const result = await response.json();
+                    
+                    if (result.contents) {
+                        const data = JSON.parse(result.contents);
+                        return data;
+                    } else {
+                        throw new Error('No data from proxy');
+                    }
                 } else {
-                    throw new Error('No data received');
+                    const data = await response.json();
+                    return data;
                 }
             } catch (error) {
                 console.error('Error fetching crypto prices:', error);
                 
-                // Fallback with demo data if API fails
+                // Always return demo data as final fallback
                 return {
                     "bitcoin": {"usd": 43250.50, "usd_24h_change": 2.45},
                     "ethereum": {"usd": 2650.75, "usd_24h_change": -1.23},
