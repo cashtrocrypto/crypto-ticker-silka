@@ -251,6 +251,7 @@
             // Sort by market cap (roughly by price for this demo)
             coinArray.sort((a, b) => b.price - a.price);
 
+            // Create the ticker content
             coinArray.forEach(coin => {
                 const priceFormatted = formatPrice(coin.price);
                 const changeFormatted = formatChange(coin.change);
@@ -265,7 +266,8 @@
                 `;
             });
 
-            tickerContent.innerHTML = html;
+            // Duplicate the content for seamless looping
+            tickerContent.innerHTML = html + html;
         }
 
         async function initializeTicker() {
