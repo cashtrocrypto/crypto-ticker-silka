@@ -18,45 +18,52 @@
             box-sizing: border-box;
         }
 
-        body {
-            background: transparent;
-            font-family: 'Silka', 'Arial', sans-serif;
-            overflow: hidden;
-            width: 1285px;
-            height: 64px;
+        html, body {
+            background: #152B2B;
             margin: 0;
             padding: 0;
+            width: 1285px;
+            height: 64px;
+            overflow: hidden;
+            font-family: 'Silka', 'Arial', sans-serif;
         }
 
-        .ticker-container {
+        .ticker-wrap {
             width: 1285px;
             height: 64px;
             background: #152B2B;
-            display: flex;
-            align-items: center;
             overflow: hidden;
-            position: absolute;
+            padding-left: 100%;
+            box-sizing: content-box;
+            position: fixed;
             right: 0;
             top: 0;
+            display: flex;
+            align-items: center;
         }
 
         .ticker-content {
-            display: flex;
-            align-items: center;
+            display: inline-block;
             white-space: nowrap;
-            animation: scroll 120s linear infinite;
+            padding-right: 100%;
+            animation: infiniteScroll 360s linear infinite;
+            transform: translate3d(0, 0, 0);
+            will-change: transform;
+            contain: layout style paint;
             font-size: 16px;
             font-weight: 500;
             color: #ffffff;
             height: 64px;
+            line-height: 64px;
+            background: #152B2B;
         }
 
         .crypto-item {
-            display: inline-flex;
-            align-items: center;
+            display: inline-block;
             margin-right: 40px;
             padding: 0 15px;
-            height: 64px;
+            vertical-align: middle;
+            background: #152B2B;
         }
 
         .crypto-symbol {
@@ -85,12 +92,13 @@
             color: #ff4444;
         }
 
-        @keyframes scroll {
+        @keyframes infiniteScroll {
             0% {
-                transform: translateX(100%);
+                transform: translate3d(0, 0, 0);
+                visibility: visible;
             }
             100% {
-                transform: translateX(-100%);
+                transform: translate3d(-100%, 0, 0);
             }
         }
 
@@ -103,17 +111,22 @@
             font-size: 16px;
             color: #ffffff;
             background: #152B2B;
-            margin: 0;
-            padding: 0;
             position: fixed;
             right: 0;
             top: 0;
+        }
+
+        /* Accessibility support */
+        @media (prefers-reduced-motion: reduce) {
+            .ticker-content {
+                animation-play-state: paused;
+            }
         }
     </style>
 </head>
 <body>
     <div id="loading" class="loading">Loading crypto prices...</div>
-    <div id="ticker" class="ticker-container" style="display: none;">
+    <div id="ticker" class="ticker-wrap" style="display: none;">
         <div id="ticker-content" class="ticker-content"></div>
     </div>
 
@@ -245,7 +258,6 @@
 
         function updateTicker(data) {
             const tickerContent = document.getElementById('ticker-content');
-            let html = '';
 
             // Create array of coins with their data for sorting
             const coinArray = Object.entries(data).map(([coinId, coinData]) => ({
@@ -258,24 +270,24 @@
             // Sort by market cap (roughly by price for this demo)
             coinArray.sort((a, b) => b.price - a.price);
 
-            // Create the ticker content and repeat it 3 times for seamless looping
-            let singleLoop = '';
+            // Create single loop of content
+            let content = '';
             coinArray.forEach(coin => {
                 const priceFormatted = formatPrice(coin.price);
                 const changeFormatted = formatChange(coin.change);
                 const changeClass = coin.change >= 0 ? 'positive' : 'negative';
 
-                singleLoop += `
-                    <div class="crypto-item">
+                content += `
+                    <span class="crypto-item">
                         <span class="crypto-symbol">${coin.symbol}</span>
                         <span class="crypto-price">${priceFormatted}</span>
                         <span class="crypto-change ${changeClass}">${changeFormatted}</span>
-                    </div>
+                    </span>
                 `;
             });
 
-            // Triple the content for seamless infinite loop
-            tickerContent.innerHTML = singleLoop + singleLoop + singleLoop;
+            // Single content loop - the padding technique handles the seamless repeat
+            tickerContent.innerHTML = content;
         }
 
         async function initializeTicker() {
@@ -305,6 +317,38 @@
 
         // Refresh prices every 60 seconds
         setInterval(refreshPrices, 60000);
+
+        // Animation restart fallback for persistent issues
+        function monitorAndResetAnimation() {
+            const element = document.getElementById('ticker-content');
+            if (!element) return;
+            
+            let lastPosition = 0;
+            let stuckCount = 0;
+            
+            setInterval(() => {
+                const currentPosition = element.getBoundingClientRect().left;
+                
+                if (Math.abs(currentPosition - lastPosition) < 1) {
+                    stuckCount++;
+                    if (stuckCount > 3) {
+                        // Force animation restart
+                        element.style.animation = 'none';
+                        element.offsetHeight; // Force reflow
+                        element.style.animation = 'infiniteScroll 360s linear infinite';
+                        stuckCount = 0;
+                        console.log('Animation reset applied');
+                    }
+                } else {
+                    stuckCount = 0;
+                }
+                
+                lastPosition = currentPosition;
+            }, 2000);
+        }
+
+        // Start monitoring after ticker loads
+        setTimeout(monitorAndResetAnimation, 5000);
     </script>
 </body>
 </html>
