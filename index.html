@@ -33,8 +33,7 @@
             height: 64px;
             background: #152B2B;
             overflow: hidden;
-            padding-left: 100%;
-            box-sizing: content-box;
+            box-sizing: border-box;
             position: fixed;
             right: 0;
             top: 0;
@@ -43,10 +42,9 @@
         }
 
         .ticker-content {
-            display: inline-block;
+            display: flex;
             white-space: nowrap;
-            padding-right: 100%;
-            animation: infiniteScroll 360s linear infinite;
+            animation: infiniteScroll 270s linear infinite;
             transform: translate3d(0, 0, 0);
             will-change: transform;
             contain: layout style paint;
@@ -54,15 +52,16 @@
             font-weight: 500;
             color: #ffffff;
             height: 64px;
-            line-height: 64px;
             background: #152B2B;
         }
 
         .crypto-item {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
             margin-right: 40px;
             padding: 0 15px;
-            vertical-align: middle;
+            height: 64px;
+            flex-shrink: 0;
             background: #152B2B;
         }
 
@@ -94,8 +93,7 @@
 
         @keyframes infiniteScroll {
             0% {
-                transform: translate3d(0, 0, 0);
-                visibility: visible;
+                transform: translate3d(1285px, 0, 0);
             }
             100% {
                 transform: translate3d(-100%, 0, 0);
@@ -270,7 +268,7 @@
             // Sort by market cap (roughly by price for this demo)
             coinArray.sort((a, b) => b.price - a.price);
 
-            // Create single loop of content
+            // Create single loop of content and duplicate it for seamless looping
             let content = '';
             coinArray.forEach(coin => {
                 const priceFormatted = formatPrice(coin.price);
@@ -278,16 +276,16 @@
                 const changeClass = coin.change >= 0 ? 'positive' : 'negative';
 
                 content += `
-                    <span class="crypto-item">
+                    <div class="crypto-item">
                         <span class="crypto-symbol">${coin.symbol}</span>
                         <span class="crypto-price">${priceFormatted}</span>
                         <span class="crypto-change ${changeClass}">${changeFormatted}</span>
-                    </span>
+                    </div>
                 `;
             });
 
-            // Single content loop - the padding technique handles the seamless repeat
-            tickerContent.innerHTML = content;
+            // Duplicate content for seamless infinite loop
+            tickerContent.innerHTML = content + content;
         }
 
         async function initializeTicker() {
@@ -335,7 +333,7 @@
                         // Force animation restart
                         element.style.animation = 'none';
                         element.offsetHeight; // Force reflow
-                        element.style.animation = 'infiniteScroll 360s linear infinite';
+                        element.style.animation = 'infiniteScroll 270s linear infinite';
                         stuckCount = 0;
                         console.log('Animation reset applied');
                     }
