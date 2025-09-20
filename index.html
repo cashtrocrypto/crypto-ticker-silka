@@ -3,350 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Ticker</title>
+    <title>Date Time Display</title>
     <style>
         @font-face {
             font-family: 'Silka';
-            src: url('./silka-regular.woff') format('woff');
-            font-weight: normal;
-            font-style: normal;
+            src: url('Silka.woff') format('woff');
         }
-
-        * {
+        
+        body {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+            font-family: 'Silka', Arial, sans-serif;
         }
-
-        html, body {
-            background: transparent;
-            margin: 0;
-            padding: 0;
-            width: 1285px;
+        
+        .datetime-banner {
+            background-color: #0B1B1B;
+            width: 392px;
             height: 64px;
-            overflow: hidden;
-            font-family: 'Silka', 'Arial', sans-serif;
-        }
-
-        .ticker-wrap {
-            width: 1285px;
-            height: 64px;
-            background: #152B2B;
-            overflow: hidden;
-            box-sizing: border-box;
-            position: fixed;
-            right: 0;
-            top: 0;
             display: flex;
             align-items: center;
-        }
-
-        .ticker-content {
-            display: flex;
-            white-space: nowrap;
-            animation: infiniteScroll 270s linear infinite;
-            transform: translate3d(0, 0, 0);
-            will-change: transform;
-            contain: layout style paint;
-            font-size: 16px;
-            font-weight: 500;
-            color: #ffffff;
-            height: 64px;
-            background: #152B2B;
-        }
-
-        .crypto-item {
-            display: inline-flex;
-            align-items: center;
-            margin-right: 40px;
-            padding: 0 15px;
-            height: 64px;
-            flex-shrink: 0;
-            background: #152B2B;
-        }
-
-        .crypto-symbol {
-            color: #ffffff;
-            margin-right: 8px;
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        .crypto-price {
-            color: #ffffff;
-            margin-right: 8px;
-            font-size: 16px;
-        }
-
-        .crypto-change {
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .positive {
-            color: #00ff88;
-        }
-
-        .negative {
-            color: #ff4444;
-        }
-
-        @keyframes infiniteScroll {
-            0% {
-                transform: translate3d(1285px, 0, 0);
-            }
-            100% {
-                transform: translate3d(-100%, 0, 0);
-            }
-        }
-
-        .loading {
-            display: flex;
             justify-content: center;
-            align-items: center;
-            height: 64px;
-            width: 1285px;
-            font-size: 16px;
-            color: #ffffff;
-            background: #152B2B;
-            position: fixed;
-            right: 0;
-            top: 0;
         }
-
-        /* Accessibility support */
-        @media (prefers-reduced-motion: reduce) {
-            .ticker-content {
-                animation-play-state: paused;
-            }
+        
+        #datetime {
+            color: white;
+            font-size: 16px;
+            white-space: nowrap;
+            font-weight: normal;
         }
     </style>
 </head>
 <body>
-    <div id="loading" class="loading">Loading crypto prices...</div>
-    <div id="ticker" class="ticker-wrap" style="display: none;">
-        <div id="ticker-content" class="ticker-content"></div>
+    <div class="datetime-banner">
+        <div id="datetime"></div>
     </div>
-
+    
     <script>
-        // Top 20 cryptocurrencies (excluding stablecoins)
-        const COINS = 'bitcoin,ethereum,binancecoin,solana,xrp,cardano,avalanche-2,dogecoin,chainlink,toncoin,shiba-inu,polygon,litecoin,bitcoin-cash,near,uniswap,internet-computer,ethereum-classic,render-token,hedera-hashgraph';
+        function updateDateTime() {
+            const now = new Date();
+            
+            // Get day of week (3-letter abbreviation)
+            const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+            const dayName = days[now.getDay()];
+            
+            // Get day of month
+            const day = now.getDate();
+            
+            // Get month (3-letter abbreviation)
+            const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
+                           'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+            const monthName = months[now.getMonth()];
+            
+            // Get year
+            const year = now.getFullYear();
+            
+            // Get time in 12-hour format
+            let hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // 0 should be 12
+            
+            // Format the complete string
+            const dateTimeString = `${dayName} ${day} ${monthName} ${year} - ${hours}:${minutes} ${ampm} ET`;
+            
+            document.getElementById('datetime').textContent = dateTimeString;
+        }
         
-        let cryptoData = {};
-
-        async function fetchCryptoPrices() {
-            try {
-                // Try direct CoinGecko API first
-                const directUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${COINS}&vs_currencies=usd&include_24hr_change=true`;
-                let response = await fetch(directUrl);
-                
-                if (!response.ok) {
-                    // Fallback to CORS proxy if direct fails
-                    const proxyUrl = `https://cors-anywhere.herokuapp.com/${directUrl}`;
-                    response = await fetch(proxyUrl);
-                }
-                
-                if (!response.ok) {
-                    // Second fallback with allorigins
-                    const alloriginsUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(directUrl)}`;
-                    response = await fetch(alloriginsUrl);
-                    const result = await response.json();
-                    
-                    if (result.contents) {
-                        const data = JSON.parse(result.contents);
-                        return data;
-                    } else {
-                        throw new Error('No data from proxy');
-                    }
-                } else {
-                    const data = await response.json();
-                    return data;
-                }
-            } catch (error) {
-                console.error('Error fetching crypto prices:', error);
-                
-                // Always return demo data as final fallback
-                return {
-                    "bitcoin": {"usd": 43250.50, "usd_24h_change": 2.45},
-                    "ethereum": {"usd": 2650.75, "usd_24h_change": -1.23},
-                    "binancecoin": {"usd": 315.40, "usd_24h_change": 1.67},
-                    "solana": {"usd": 98.45, "usd_24h_change": 5.21},
-                    "xrp": {"usd": 0.62, "usd_24h_change": 3.45},
-                    "cardano": {"usd": 0.485, "usd_24h_change": -0.85},
-                    "avalanche-2": {"usd": 36.78, "usd_24h_change": 2.17},
-                    "dogecoin": {"usd": 0.084, "usd_24h_change": -2.45},
-                    "chainlink": {"usd": 14.67, "usd_24h_change": 1.94},
-                    "toncoin": {"usd": 2.34, "usd_24h_change": 4.12},
-                    "shiba-inu": {"usd": 0.000009, "usd_24h_change": -1.67},
-                    "polygon": {"usd": 0.89, "usd_24h_change": 1.94},
-                    "litecoin": {"usd": 73.25, "usd_24h_change": 1.56},
-                    "bitcoin-cash": {"usd": 234.67, "usd_24h_change": 0.78},
-                    "near": {"usd": 5.67, "usd_24h_change": 2.89},
-                    "uniswap": {"usd": 8.45, "usd_24h_change": -0.34},
-                    "internet-computer": {"usd": 12.78, "usd_24h_change": 3.21},
-                    "ethereum-classic": {"usd": 27.89, "usd_24h_change": 1.45},
-                    "render-token": {"usd": 7.23, "usd_24h_change": -1.89},
-                    "hedera-hashgraph": {"usd": 0.067, "usd_24h_change": 2.34}
-                };
-            }
-        }
-
-        function formatPrice(price) {
-            if (price >= 1000) {
-                return price.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0
-                });
-            } else if (price >= 1) {
-                return price.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
-            } else if (price >= 0.01) {
-                return price.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 3,
-                    maximumFractionDigits: 3
-                });
-            } else {
-                return price.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 6,
-                    maximumFractionDigits: 8
-                });
-            }
-        }
-
-        function formatChange(change) {
-            const sign = change >= 0 ? '+' : '';
-            return `${sign}${change.toFixed(1)}%`;
-        }
-
-        function getCoinSymbol(coinId) {
-            const symbols = {
-                'bitcoin': 'BTC',
-                'ethereum': 'ETH',
-                'binancecoin': 'BNB',
-                'solana': 'SOL',
-                'xrp': 'XRP',
-                'cardano': 'ADA',
-                'avalanche-2': 'AVAX',
-                'dogecoin': 'DOGE',
-                'chainlink': 'LINK',
-                'toncoin': 'TON',
-                'shiba-inu': 'SHIB',
-                'polygon': 'MATIC',
-                'litecoin': 'LTC',
-                'bitcoin-cash': 'BCH',
-                'near': 'NEAR',
-                'uniswap': 'UNI',
-                'internet-computer': 'ICP',
-                'ethereum-classic': 'ETC',
-                'render-token': 'RNDR',
-                'hedera-hashgraph': 'HBAR'
-            };
-            return symbols[coinId] || coinId.toUpperCase();
-        }
-
-        function updateTicker(data) {
-            const tickerContent = document.getElementById('ticker-content');
-
-            // Create array of coins with their data for sorting
-            const coinArray = Object.entries(data).map(([coinId, coinData]) => ({
-                id: coinId,
-                symbol: getCoinSymbol(coinId),
-                price: coinData.usd,
-                change: coinData.usd_24h_change || 0
-            }));
-
-            // Sort by market cap (roughly by price for this demo)
-            coinArray.sort((a, b) => b.price - a.price);
-
-            // Create single loop of content and duplicate it for seamless looping
-            let content = '';
-            coinArray.forEach(coin => {
-                const priceFormatted = formatPrice(coin.price);
-                const changeFormatted = formatChange(coin.change);
-                const changeClass = coin.change >= 0 ? 'positive' : 'negative';
-
-                content += `
-                    <div class="crypto-item">
-                        <span class="crypto-symbol">${coin.symbol}</span>
-                        <span class="crypto-price">${priceFormatted}</span>
-                        <span class="crypto-change ${changeClass}">${changeFormatted}</span>
-                    </div>
-                `;
-            });
-
-            // Duplicate content for seamless infinite loop
-            tickerContent.innerHTML = content + content;
-        }
-
-        async function initializeTicker() {
-            const data = await fetchCryptoPrices();
-            
-            if (data) {
-                cryptoData = data;
-                updateTicker(data);
-                
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('ticker').style.display = 'flex';
-            } else {
-                document.getElementById('loading').textContent = 'Failed to load crypto prices';
-            }
-        }
-
-        async function refreshPrices() {
-            const data = await fetchCryptoPrices();
-            if (data) {
-                cryptoData = data;
-                updateTicker(data);
-            }
-        }
-
-        // Initialize on page load
-        initializeTicker();
-
-        // Refresh prices every 60 seconds
-        setInterval(refreshPrices, 60000);
-
-        // Animation restart fallback for persistent issues
-        function monitorAndResetAnimation() {
-            const element = document.getElementById('ticker-content');
-            if (!element) return;
-            
-            let lastPosition = 0;
-            let stuckCount = 0;
-            
-            setInterval(() => {
-                const currentPosition = element.getBoundingClientRect().left;
-                
-                if (Math.abs(currentPosition - lastPosition) < 1) {
-                    stuckCount++;
-                    if (stuckCount > 3) {
-                        // Force animation restart
-                        element.style.animation = 'none';
-                        element.offsetHeight; // Force reflow
-                        element.style.animation = 'infiniteScroll 270s linear infinite';
-                        stuckCount = 0;
-                        console.log('Animation reset applied');
-                    }
-                } else {
-                    stuckCount = 0;
-                }
-                
-                lastPosition = currentPosition;
-            }, 2000);
-        }
-
-        // Start monitoring after ticker loads
-        setTimeout(monitorAndResetAnimation, 5000);
+        // Update immediately
+        updateDateTime();
+        
+        // Update every second
+        setInterval(updateDateTime, 1000);
     </script>
 </body>
 </html>
