@@ -1,4 +1,28 @@
-<!DOCTYPE html>
+        function getCoinSymbol(coinId) {
+            const symbols = {
+                'bitcoin': 'BTC',
+                'ethereum': 'ETH',
+                'binancecoin': 'BNB',
+                'solana': 'SOL',
+                'xrp': 'XRP',
+                'cardano': 'ADA',
+                'avalanche-2': 'AVAX',
+                'dogecoin': 'DOGE',
+                'chainlink': 'LINK',
+                'toncoin': 'TON',
+                'shiba-inu': 'SHIB',
+                'polygon': 'MATIC',
+                'litecoin': 'LTC',
+                'bitcoin-cash': 'BCH',
+                'near': 'NEAR',
+                'uniswap': 'UNI',
+                'internet-computer': 'ICP',
+                'ethereum-classic': 'ETC',
+                'render-token': 'RNDR',
+                'hedera-hashgraph': 'HBAR'
+            };
+            return symbols[coinId] || coinId.toUpperCase();
+        }<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -9,6 +33,13 @@
             font-family: 'Silka';
             src: url('./silka-regular.woff') format('woff');
             font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Silka';
+            src: url('./silka-medium.woff') format('woff');
+            font-weight: 500;
             font-style: normal;
         }
 
@@ -44,7 +75,7 @@
         .ticker-content {
             display: flex;
             white-space: nowrap;
-            animation: infiniteScroll 270s linear infinite;
+            animation: seamlessScroll 270s linear infinite;
             transform: translate3d(0, 0, 0);
             will-change: transform;
             contain: layout style paint;
@@ -53,6 +84,8 @@
             color: #ffffff;
             height: 64px;
             background: #152B2B;
+            line-height: 100%;
+            letter-spacing: 0.05em;
         }
 
         .crypto-item {
@@ -63,40 +96,61 @@
             height: 64px;
             flex-shrink: 0;
             background: #152B2B;
+            gap: 12px;
+        }
+
+        .crypto-logo {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #333;
+            flex-shrink: 0;
         }
 
         .crypto-symbol {
             color: #ffffff;
-            margin-right: 8px;
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        .crypto-price {
-            color: #ffffff;
-            margin-right: 8px;
-            font-size: 16px;
-        }
-
-        .crypto-change {
-            font-size: 14px;
             font-weight: 500;
+            font-size: 16px;
+            line-height: 100%;
+            letter-spacing: 0.05em;
         }
 
-        .positive {
-            color: #00ff88;
+        .crypto-price-box {
+            background: #1F3D3D;
+            border-radius: 10px;
+            padding: 6px 8px;
+            font-size: 16px;
+            line-height: 100%;
+            letter-spacing: 0.05em;
+            font-weight: normal;
+            color: #ffffff;
         }
 
-        .negative {
-            color: #ff4444;
+        .crypto-change-box {
+            border-radius: 10px;
+            padding: 6px 8px;
+            font-size: 16px;
+            line-height: 100%;
+            letter-spacing: 0.05em;
+            font-weight: normal;
         }
 
-        @keyframes infiniteScroll {
-            0% {
-                transform: translate3d(1285px, 0, 0);
+        .change-positive {
+            background: #20513C;
+            color: #3EDF84;
+        }
+
+        .change-negative {
+            background: #E664244A;
+            color: #DD7900;
+        }
+
+        @keyframes seamlessScroll {
+            from {
+                transform: translate3d(100%, 0, 0);
             }
-            100% {
-                transform: translate3d(-100%, 0, 0);
+            to {
+                transform: translate3d(-50%, 0, 0);
             }
         }
 
@@ -228,30 +282,31 @@
             return `${sign}${change.toFixed(1)}%`;
         }
 
-        function getCoinSymbol(coinId) {
-            const symbols = {
-                'bitcoin': 'BTC',
-                'ethereum': 'ETH',
-                'binancecoin': 'BNB',
-                'solana': 'SOL',
-                'xrp': 'XRP',
-                'cardano': 'ADA',
-                'avalanche-2': 'AVAX',
-                'dogecoin': 'DOGE',
-                'chainlink': 'LINK',
-                'toncoin': 'TON',
-                'shiba-inu': 'SHIB',
-                'polygon': 'MATIC',
-                'litecoin': 'LTC',
-                'bitcoin-cash': 'BCH',
-                'near': 'NEAR',
-                'uniswap': 'UNI',
-                'internet-computer': 'ICP',
-                'ethereum-classic': 'ETC',
-                'render-token': 'RNDR',
-                'hedera-hashgraph': 'HBAR'
+        function getCoinLogo(coinId) {
+            // Using CoinGecko's logo API - these are publicly available
+            const logoMap = {
+                'bitcoin': 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
+                'ethereum': 'https://assets.coingecko.com/coins/images/279/small/ethereum.png',
+                'binancecoin': 'https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png',
+                'solana': 'https://assets.coingecko.com/coins/images/4128/small/solana.png',
+                'xrp': 'https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png',
+                'cardano': 'https://assets.coingecko.com/coins/images/975/small/cardano.png',
+                'avalanche-2': 'https://assets.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png',
+                'dogecoin': 'https://assets.coingecko.com/coins/images/5/small/dogecoin.png',
+                'chainlink': 'https://assets.coingecko.com/coins/images/877/small/chainlink-new-logo.png',
+                'toncoin': 'https://assets.coingecko.com/coins/images/17980/small/ton_symbol.png',
+                'shiba-inu': 'https://assets.coingecko.com/coins/images/11939/small/shiba.png',
+                'polygon': 'https://assets.coingecko.com/coins/images/4713/small/matic-token-icon.png',
+                'litecoin': 'https://assets.coingecko.com/coins/images/2/small/litecoin.png',
+                'bitcoin-cash': 'https://assets.coingecko.com/coins/images/780/small/bitcoin-cash-circle.png',
+                'near': 'https://assets.coingecko.com/coins/images/10365/small/near.jpg',
+                'uniswap': 'https://assets.coingecko.com/coins/images/12504/small/uni.jpg',
+                'internet-computer': 'https://assets.coingecko.com/coins/images/14495/small/Internet_Computer_logo.png',
+                'ethereum-classic': 'https://assets.coingecko.com/coins/images/453/small/ethereum-classic-logo.png',
+                'render-token': 'https://assets.coingecko.com/coins/images/11636/small/rndr.png',
+                'hedera-hashgraph': 'https://assets.coingecko.com/coins/images/3441/small/Hedera_Hashgraph_logo.png'
             };
-            return symbols[coinId] || coinId.toUpperCase();
+            return logoMap[coinId] || 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png';
         }
 
         function updateTicker(data) {
@@ -273,13 +328,16 @@
             coinArray.forEach(coin => {
                 const priceFormatted = formatPrice(coin.price);
                 const changeFormatted = formatChange(coin.change);
-                const changeClass = coin.change >= 0 ? 'positive' : 'negative';
+                const changeClass = coin.change >= 0 ? 'change-positive' : 'change-negative';
+                const logoUrl = getCoinLogo(coin.id);
+                const symbol = getCoinSymbol(coin.id);
 
                 content += `
                     <div class="crypto-item">
-                        <span class="crypto-symbol">${coin.symbol}</span>
-                        <span class="crypto-price">${priceFormatted}</span>
-                        <span class="crypto-change ${changeClass}">${changeFormatted}</span>
+                        <img src="${logoUrl}" alt="${symbol}" class="crypto-logo" onerror="this.style.display='none'">
+                        <span class="crypto-symbol">${symbol}</span>
+                        <span class="crypto-price-box">${priceFormatted}</span>
+                        <span class="crypto-change-box ${changeClass}">${changeFormatted}</span>
                     </div>
                 `;
             });
@@ -333,7 +391,7 @@
                         // Force animation restart
                         element.style.animation = 'none';
                         element.offsetHeight; // Force reflow
-                        element.style.animation = 'infiniteScroll 270s linear infinite';
+                        element.style.animation = 'seamlessScroll 270s linear infinite';
                         stuckCount = 0;
                         console.log('Animation reset applied');
                     }
