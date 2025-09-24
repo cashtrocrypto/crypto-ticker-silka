@@ -1,28 +1,4 @@
-        function getCoinSymbol(coinId) {
-            const symbols = {
-                'bitcoin': 'BTC',
-                'ethereum': 'ETH',
-                'binancecoin': 'BNB',
-                'solana': 'SOL',
-                'xrp': 'XRP',
-                'cardano': 'ADA',
-                'avalanche-2': 'AVAX',
-                'dogecoin': 'DOGE',
-                'chainlink': 'LINK',
-                'toncoin': 'TON',
-                'shiba-inu': 'SHIB',
-                'polygon': 'MATIC',
-                'litecoin': 'LTC',
-                'bitcoin-cash': 'BCH',
-                'near': 'NEAR',
-                'uniswap': 'UNI',
-                'internet-computer': 'ICP',
-                'ethereum-classic': 'ETC',
-                'render-token': 'RNDR',
-                'hedera-hashgraph': 'HBAR'
-            };
-            return symbols[coinId] || coinId.toUpperCase();
-        }<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -64,7 +40,6 @@
             height: 64px;
             background: #152B2B;
             overflow: hidden;
-            box-sizing: border-box;
             position: fixed;
             right: 0;
             top: 0;
@@ -75,12 +50,8 @@
         .ticker-content {
             display: flex;
             white-space: nowrap;
-            animation: seamlessScroll 270s linear infinite;
-            transform: translate3d(0, 0, 0);
-            will-change: transform;
-            contain: layout style paint;
+            animation: scroll 270s linear infinite;
             font-size: 16px;
-            font-weight: 500;
             color: #ffffff;
             height: 64px;
             background: #152B2B;
@@ -145,7 +116,7 @@
             color: #DD7900;
         }
 
-        @keyframes seamlessScroll {
+        @keyframes scroll {
             from {
                 transform: translate3d(100%, 0, 0);
             }
@@ -153,285 +124,73 @@
                 transform: translate3d(-50%, 0, 0);
             }
         }
-
-        .loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 64px;
-            width: 1285px;
-            font-size: 16px;
-            color: #ffffff;
-            background: #152B2B;
-            position: fixed;
-            right: 0;
-            top: 0;
-        }
-
-        /* Accessibility support */
-        @media (prefers-reduced-motion: reduce) {
-            .ticker-content {
-                animation-play-state: paused;
-            }
-        }
     </style>
 </head>
 <body>
-    <div id="loading" class="loading">Loading crypto prices...</div>
-    <div id="ticker" class="ticker-wrap" style="display: none;">
-        <div id="ticker-content" class="ticker-content"></div>
+    <div class="ticker-wrap">
+        <div class="ticker-content">
+            <div class="crypto-item">
+                <img src="https://assets.coingecko.com/coins/images/1/small/bitcoin.png" alt="BTC" class="crypto-logo">
+                <span class="crypto-symbol">BTC</span>
+                <span class="crypto-price-box">$67,234</span>
+                <span class="crypto-change-box change-positive">+2.4%</span>
+            </div>
+            <div class="crypto-item">
+                <img src="https://assets.coingecko.com/coins/images/279/small/ethereum.png" alt="ETH" class="crypto-logo">
+                <span class="crypto-symbol">ETH</span>
+                <span class="crypto-price-box">$3,421</span>
+                <span class="crypto-change-box change-negative">-1.2%</span>
+            </div>
+            <div class="crypto-item">
+                <img src="https://assets.coingecko.com/coins/images/4128/small/solana.png" alt="SOL" class="crypto-logo">
+                <span class="crypto-symbol">SOL</span>
+                <span class="crypto-price-box">$178</span>
+                <span class="crypto-change-box change-positive">+5.2%</span>
+            </div>
+            <div class="crypto-item">
+                <img src="https://assets.coingecko.com/coins/images/975/small/cardano.png" alt="ADA" class="crypto-logo">
+                <span class="crypto-symbol">ADA</span>
+                <span class="crypto-price-box">$0.485</span>
+                <span class="crypto-change-box change-negative">-0.8%</span>
+            </div>
+            <div class="crypto-item">
+                <img src="https://assets.coingecko.com/coins/images/5/small/dogecoin.png" alt="DOGE" class="crypto-logo">
+                <span class="crypto-symbol">DOGE</span>
+                <span class="crypto-price-box">$0.084</span>
+                <span class="crypto-change-box change-negative">-2.4%</span>
+            </div>
+            <!-- Duplicate for seamless loop -->
+            <div class="crypto-item">
+                <img src="https://assets.coingecko.com/coins/images/1/small/bitcoin.png" alt="BTC" class="crypto-logo">
+                <span class="crypto-symbol">BTC</span>
+                <span class="crypto-price-box">$67,234</span>
+                <span class="crypto-change-box change-positive">+2.4%</span>
+            </div>
+            <div class="crypto-item">
+                <img src="https://assets.coingecko.com/coins/images/279/small/ethereum.png" alt="ETH" class="crypto-logo">
+                <span class="crypto-symbol">ETH</span>
+                <span class="crypto-price-box">$3,421</span>
+                <span class="crypto-change-box change-negative">-1.2%</span>
+            </div>
+            <div class="crypto-item">
+                <img src="https://assets.coingecko.com/coins/images/4128/small/solana.png" alt="SOL" class="crypto-logo">
+                <span class="crypto-symbol">SOL</span>
+                <span class="crypto-price-box">$178</span>
+                <span class="crypto-change-box change-positive">+5.2%</span>
+            </div>
+            <div class="crypto-item">
+                <img src="https://assets.coingecko.com/coins/images/975/small/cardano.png" alt="ADA" class="crypto-logo">
+                <span class="crypto-symbol">ADA</span>
+                <span class="crypto-price-box">$0.485</span>
+                <span class="crypto-change-box change-negative">-0.8%</span>
+            </div>
+            <div class="crypto-item">
+                <img src="https://assets.coingecko.com/coins/images/5/small/dogecoin.png" alt="DOGE" class="crypto-logo">
+                <span class="crypto-symbol">DOGE</span>
+                <span class="crypto-price-box">$0.084</span>
+                <span class="crypto-change-box change-negative">-2.4%</span>
+            </div>
+        </div>
     </div>
-
-    <script>
-        // Top 20 cryptocurrencies (excluding stablecoins)
-        const COINS = 'bitcoin,ethereum,binancecoin,solana,xrp,cardano,avalanche-2,dogecoin,chainlink,toncoin,shiba-inu,polygon,litecoin,bitcoin-cash,near,uniswap,internet-computer,ethereum-classic,render-token,hedera-hashgraph';
-        
-        let cryptoData = {};
-
-        async function fetchCryptoPrices() {
-            try {
-                // Try multiple approaches with better error handling
-                console.log('Attempting to fetch crypto prices...');
-                
-                // Method 1: Direct API (often blocked by CORS)
-                try {
-                    const directUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${COINS}&vs_currencies=usd&include_24hr_change=true`;
-                    const response = await fetch(directUrl, {
-                        method: 'GET',
-                        headers: {
-                            'Accept': 'application/json',
-                        }
-                    });
-                    
-                    if (response.ok) {
-                        const data = await response.json();
-                        console.log('Direct API success');
-                        return data;
-                    }
-                } catch (error) {
-                    console.log('Direct API failed:', error.message);
-                }
-
-                // Method 2: AllOrigins proxy
-                try {
-                    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://api.coingecko.com/api/v3/simple/price?ids=${COINS}&vs_currencies=usd&include_24hr_change=true`)}`;
-                    const response = await fetch(proxyUrl);
-                    const result = await response.json();
-                    
-                    if (result.contents) {
-                        const data = JSON.parse(result.contents);
-                        console.log('AllOrigins proxy success');
-                        return data;
-                    }
-                } catch (error) {
-                    console.log('AllOrigins proxy failed:', error.message);
-                }
-
-                // Method 3: Alternative proxy
-                try {
-                    const altProxyUrl = `https://cors-anywhere.herokuapp.com/https://api.coingecko.com/api/v3/simple/price?ids=${COINS}&vs_currencies=usd&include_24hr_change=true`;
-                    const response = await fetch(altProxyUrl);
-                    
-                    if (response.ok) {
-                        const data = await response.json();
-                        console.log('CORS-Anywhere proxy success');
-                        return data;
-                    }
-                } catch (error) {
-                    console.log('CORS-Anywhere proxy failed:', error.message);
-                }
-
-                throw new Error('All API methods failed');
-                
-            } catch (error) {
-                console.error('All API attempts failed, using demo data:', error);
-                
-                // Return demo data immediately - no delay
-                return {
-                    "bitcoin": {"usd": 67234.50, "usd_24h_change": 2.45},
-                    "ethereum": {"usd": 3421.75, "usd_24h_change": -1.23},
-                    "binancecoin": {"usd": 315.40, "usd_24h_change": 1.67},
-                    "solana": {"usd": 178.45, "usd_24h_change": 5.21},
-                    "xrp": {"usd": 0.62, "usd_24h_change": 3.45},
-                    "cardano": {"usd": 0.485, "usd_24h_change": -0.85},
-                    "avalanche-2": {"usd": 36.78, "usd_24h_change": 2.17},
-                    "dogecoin": {"usd": 0.084, "usd_24h_change": -2.45},
-                    "chainlink": {"usd": 14.67, "usd_24h_change": 1.94},
-                    "toncoin": {"usd": 2.34, "usd_24h_change": 4.12},
-                    "shiba-inu": {"usd": 0.000009, "usd_24h_change": -1.67},
-                    "polygon": {"usd": 0.89, "usd_24h_change": 1.94},
-                    "litecoin": {"usd": 73.25, "usd_24h_change": 1.56},
-                    "bitcoin-cash": {"usd": 234.67, "usd_24h_change": 0.78},
-                    "near": {"usd": 5.67, "usd_24h_change": 2.89},
-                    "uniswap": {"usd": 8.45, "usd_24h_change": -0.34},
-                    "internet-computer": {"usd": 12.78, "usd_24h_change": 3.21},
-                    "ethereum-classic": {"usd": 27.89, "usd_24h_change": 1.45},
-                    "render-token": {"usd": 7.23, "usd_24h_change": -1.89},
-                    "hedera-hashgraph": {"usd": 0.067, "usd_24h_change": 2.34}
-                };
-            }
-        }
-
-        function formatPrice(price) {
-            if (price >= 1000) {
-                return price.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0
-                });
-            } else if (price >= 1) {
-                return price.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
-            } else if (price >= 0.01) {
-                return price.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 3,
-                    maximumFractionDigits: 3
-                });
-            } else {
-                return price.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 6,
-                    maximumFractionDigits: 8
-                });
-            }
-        }
-
-        function formatChange(change) {
-            const sign = change >= 0 ? '+' : '';
-            return `${sign}${change.toFixed(1)}%`;
-        }
-
-        function getCoinLogo(coinId) {
-            // Using CoinGecko's logo API - these are publicly available
-            const logoMap = {
-                'bitcoin': 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
-                'ethereum': 'https://assets.coingecko.com/coins/images/279/small/ethereum.png',
-                'binancecoin': 'https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png',
-                'solana': 'https://assets.coingecko.com/coins/images/4128/small/solana.png',
-                'xrp': 'https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png',
-                'cardano': 'https://assets.coingecko.com/coins/images/975/small/cardano.png',
-                'avalanche-2': 'https://assets.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png',
-                'dogecoin': 'https://assets.coingecko.com/coins/images/5/small/dogecoin.png',
-                'chainlink': 'https://assets.coingecko.com/coins/images/877/small/chainlink-new-logo.png',
-                'toncoin': 'https://assets.coingecko.com/coins/images/17980/small/ton_symbol.png',
-                'shiba-inu': 'https://assets.coingecko.com/coins/images/11939/small/shiba.png',
-                'polygon': 'https://assets.coingecko.com/coins/images/4713/small/matic-token-icon.png',
-                'litecoin': 'https://assets.coingecko.com/coins/images/2/small/litecoin.png',
-                'bitcoin-cash': 'https://assets.coingecko.com/coins/images/780/small/bitcoin-cash-circle.png',
-                'near': 'https://assets.coingecko.com/coins/images/10365/small/near.jpg',
-                'uniswap': 'https://assets.coingecko.com/coins/images/12504/small/uni.jpg',
-                'internet-computer': 'https://assets.coingecko.com/coins/images/14495/small/Internet_Computer_logo.png',
-                'ethereum-classic': 'https://assets.coingecko.com/coins/images/453/small/ethereum-classic-logo.png',
-                'render-token': 'https://assets.coingecko.com/coins/images/11636/small/rndr.png',
-                'hedera-hashgraph': 'https://assets.coingecko.com/coins/images/3441/small/Hedera_Hashgraph_logo.png'
-            };
-            return logoMap[coinId] || 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png';
-        }
-
-        function updateTicker(data) {
-            const tickerContent = document.getElementById('ticker-content');
-
-            // Create array of coins with their data for sorting
-            const coinArray = Object.entries(data).map(([coinId, coinData]) => ({
-                id: coinId,
-                symbol: getCoinSymbol(coinId),
-                price: coinData.usd,
-                change: coinData.usd_24h_change || 0
-            }));
-
-            // Sort by market cap (roughly by price for this demo)
-            coinArray.sort((a, b) => b.price - a.price);
-
-            // Create single loop of content and duplicate it for seamless looping
-            let content = '';
-            coinArray.forEach(coin => {
-                const priceFormatted = formatPrice(coin.price);
-                const changeFormatted = formatChange(coin.change);
-                const changeClass = coin.change >= 0 ? 'change-positive' : 'change-negative';
-                const logoUrl = getCoinLogo(coin.id);
-                const symbol = getCoinSymbol(coin.id);
-
-                content += `
-                    <div class="crypto-item">
-                        <img src="${logoUrl}" alt="${symbol}" class="crypto-logo" onerror="this.style.display='none'">
-                        <span class="crypto-symbol">${symbol}</span>
-                        <span class="crypto-price-box">${priceFormatted}</span>
-                        <span class="crypto-change-box ${changeClass}">${changeFormatted}</span>
-                    </div>
-                `;
-            });
-
-            // Duplicate content for seamless infinite loop
-            tickerContent.innerHTML = content + content;
-        }
-
-        async function initializeTicker() {
-            const data = await fetchCryptoPrices();
-            
-            if (data) {
-                cryptoData = data;
-                updateTicker(data);
-                
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('ticker').style.display = 'flex';
-            } else {
-                document.getElementById('loading').textContent = 'Failed to load crypto prices';
-            }
-        }
-
-        async function refreshPrices() {
-            const data = await fetchCryptoPrices();
-            if (data) {
-                cryptoData = data;
-                updateTicker(data);
-            }
-        }
-
-        // Initialize on page load
-        initializeTicker();
-
-        // Refresh prices every 60 seconds
-        setInterval(refreshPrices, 60000);
-
-        // Animation restart fallback for persistent issues
-        function monitorAndResetAnimation() {
-            const element = document.getElementById('ticker-content');
-            if (!element) return;
-            
-            let lastPosition = 0;
-            let stuckCount = 0;
-            
-            setInterval(() => {
-                const currentPosition = element.getBoundingClientRect().left;
-                
-                if (Math.abs(currentPosition - lastPosition) < 1) {
-                    stuckCount++;
-                    if (stuckCount > 3) {
-                        // Force animation restart
-                        element.style.animation = 'none';
-                        element.offsetHeight; // Force reflow
-                        element.style.animation = 'seamlessScroll 270s linear infinite';
-                        stuckCount = 0;
-                        console.log('Animation reset applied');
-                    }
-                } else {
-                    stuckCount = 0;
-                }
-                
-                lastPosition = currentPosition;
-            }, 2000);
-        }
-
-        // Start monitoring after ticker loads
-        setTimeout(monitorAndResetAnimation, 5000);
-    </script>
 </body>
 </html>
