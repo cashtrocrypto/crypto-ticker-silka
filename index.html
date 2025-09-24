@@ -190,41 +190,68 @@
 
         async function fetchCryptoPrices() {
             try {
-                // Try direct CoinGecko API first
-                const directUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${COINS}&vs_currencies=usd&include_24hr_change=true`;
-                let response = await fetch(directUrl);
+                // Try multiple approaches with better error handling
+                console.log('Attempting to fetch crypto prices...');
                 
-                if (!response.ok) {
-                    // Fallback to CORS proxy if direct fails
-                    const proxyUrl = `https://cors-anywhere.herokuapp.com/${directUrl}`;
-                    response = await fetch(proxyUrl);
+                // Method 1: Direct API (often blocked by CORS)
+                try {
+                    const directUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${COINS}&vs_currencies=usd&include_24hr_change=true`;
+                    const response = await fetch(directUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('Direct API success');
+                        return data;
+                    }
+                } catch (error) {
+                    console.log('Direct API failed:', error.message);
                 }
-                
-                if (!response.ok) {
-                    // Second fallback with allorigins
-                    const alloriginsUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(directUrl)}`;
-                    response = await fetch(alloriginsUrl);
+
+                // Method 2: AllOrigins proxy
+                try {
+                    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://api.coingecko.com/api/v3/simple/price?ids=${COINS}&vs_currencies=usd&include_24hr_change=true`)}`;
+                    const response = await fetch(proxyUrl);
                     const result = await response.json();
                     
                     if (result.contents) {
                         const data = JSON.parse(result.contents);
+                        console.log('AllOrigins proxy success');
                         return data;
-                    } else {
-                        throw new Error('No data from proxy');
                     }
-                } else {
-                    const data = await response.json();
-                    return data;
+                } catch (error) {
+                    console.log('AllOrigins proxy failed:', error.message);
                 }
-            } catch (error) {
-                console.error('Error fetching crypto prices:', error);
+
+                // Method 3: Alternative proxy
+                try {
+                    const altProxyUrl = `https://cors-anywhere.herokuapp.com/https://api.coingecko.com/api/v3/simple/price?ids=${COINS}&vs_currencies=usd&include_24hr_change=true`;
+                    const response = await fetch(altProxyUrl);
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('CORS-Anywhere proxy success');
+                        return data;
+                    }
+                } catch (error) {
+                    console.log('CORS-Anywhere proxy failed:', error.message);
+                }
+
+                throw new Error('All API methods failed');
                 
-                // Always return demo data as final fallback
+            } catch (error) {
+                console.error('All API attempts failed, using demo data:', error);
+                
+                // Return demo data immediately - no delay
                 return {
-                    "bitcoin": {"usd": 43250.50, "usd_24h_change": 2.45},
-                    "ethereum": {"usd": 2650.75, "usd_24h_change": -1.23},
+                    "bitcoin": {"usd": 67234.50, "usd_24h_change": 2.45},
+                    "ethereum": {"usd": 3421.75, "usd_24h_change": -1.23},
                     "binancecoin": {"usd": 315.40, "usd_24h_change": 1.67},
-                    "solana": {"usd": 98.45, "usd_24h_change": 5.21},
+                    "solana": {"usd": 178.45, "usd_24h_change": 5.21},
                     "xrp": {"usd": 0.62, "usd_24h_change": 3.45},
                     "cardano": {"usd": 0.485, "usd_24h_change": -0.85},
                     "avalanche-2": {"usd": 36.78, "usd_24h_change": 2.17},
